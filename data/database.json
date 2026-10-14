@@ -1,0 +1,133 @@
+{
+  "shops": [
+    {
+      "id": "shop-main",
+      "name": "Main Hardware Store",
+      "type": "hardware",
+      "location": "Kariakoo, Dar es Salaam",
+      "phone": "+255 700 000 000",
+      "email": "store@jengakwanza.co.tz",
+      "isMain": true,
+      "active": true,
+      "created_at": "2026-10-14T21:53:37.030Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-cement",
+      "name": "Cement & Aggregates",
+      "icon": "Box"
+    },
+    {
+      "id": "cat-steel",
+      "name": "Steel & Rebar",
+      "icon": "Layers"
+    },
+    {
+      "id": "cat-roofing",
+      "name": "Roofing & Timber",
+      "icon": "Home"
+    },
+    {
+      "id": "cat-paints",
+      "name": "Paints & Finishes",
+      "icon": "Paintbrush"
+    },
+    {
+      "id": "cat-plumbing",
+      "name": "Plumbing & Pipes",
+      "icon": "Droplets"
+    },
+    {
+      "id": "cat-electrical",
+      "name": "Electrical & Lighting",
+      "icon": "Zap"
+    },
+    {
+      "id": "cat-tools",
+      "name": "Tools & Fasteners",
+      "icon": "Wrench"
+    },
+    {
+      "id": "cat-masonry",
+      "name": "Masonry & Tiling",
+      "icon": "Grid"
+    },
+    {
+      "id": "cat-sanitary",
+      "name": "Sanitaryware & Tiles",
+      "icon": "Droplet"
+    },
+    {
+      "id": "cat-general",
+      "name": "General Hardware",
+      "icon": "Folder"
+    }
+  ],
+  "products": [],
+  "customers": [
+    {
+      "id": "cust-walkin",
+      "name": "Walk-in Retail Cash Customer",
+      "phone": "",
+      "email": "",
+      "idNumber": "",
+      "type": "retail",
+      "creditLimit": 0,
+      "currentDebt": 0,
+      "notes": "Default walk-in counter customer"
+    }
+  ],
+  "suppliers": [],
+  "sales": [],
+  "expenses": [],
+  "transfers": [],
+  "purchases": [],
+  "stockAdjustments": [],
+  "users": [
+    {
+      "id": "usr-admin",
+      "username": "admin",
+      "name": "Store Owner / Director",
+      "role": "admin",
+      "pin": "1234",
+      "assignedShopId": "all",
+      "phone": "",
+      "active": true
+    },
+    {
+      "id": "usr-cashier",
+      "username": "cashier",
+      "name": "Cashier 1",
+      "role": "cashier",
+      "pin": "0000",
+      "assignedShopId": "shop-main",
+      "phone": "",
+      "active": true
+    },
+    {
+      "id": "usr-manager",
+      "username": "manager",
+      "name": "Store Manager",
+      "role": "manager",
+      "pin": "5678",
+      "assignedShopId": "shop-main",
+      "phone": "",
+      "active": true
+    }
+  ],
+  "settings": {
+    "businessName": "JENGA KWANZA HARDWARE & STORES",
+    "tagline": "Ubora wa Vifaa vya Ujenzi, Mabati, Saruji na Rangi",
+    "currency": "TZS",
+    "currencySymbol": "Tsh",
+    "taxEnabled": false,
+    "taxRate": 18,
+    "traTin": "",
+    "phone": "+255 700 000 000",
+    "email": "info@jengakwanza.co.tz",
+    "address": "Kariakoo Commercial District, Dar es Salaam",
+    "receiptHeader": "JENGA KWANZA HARDWARE & STORES",
+    "receiptFooter": "Asante kwa kujenga nasi! Bidhaa zilizonunuliwa zinaweza kubadilishwa ndani ya siku 7 zikiwa katika hali nzuri na risiti halisi."
+  }
+}
