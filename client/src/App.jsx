@@ -678,13 +678,6 @@ export default function App() {
     refreshAnalytics();
   };
 
-  const handleLoadStarter = async () => {
-    await api.loadStarterCatalog();
-    const updated = await api.getProducts();
-    setProducts(updated);
-    refreshAnalytics();
-  };
-
   const handleClearAllProducts = async () => {
     await api.clearAllProducts();
     setProducts([]);
@@ -851,7 +844,6 @@ export default function App() {
             onDeleteProduct={handleDeleteProduct}
             onAdjustStock={handleAdjustStock}
             onBulkImport={handleBulkImport}
-            onLoadStarter={handleLoadStarter}
             onClearAll={handleClearAllProducts}
           />
         )}

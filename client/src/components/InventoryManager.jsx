@@ -15,7 +15,6 @@ import {
   Boxes,
   FileSpreadsheet,
   CheckCircle,
-  Sparkles,
   Barcode
 } from 'lucide-react';
 import ProductModal from './ProductModal';
@@ -33,7 +32,6 @@ export default function InventoryManager({
   onDeleteProduct,
   onAdjustStock,
   onBulkImport,
-  onLoadStarter,
   onClearAll
 }) {
   const [search, setSearch] = useState('');
@@ -295,7 +293,7 @@ export default function InventoryManager({
           <div>
             <h3 className="font-extrabold text-base text-slate-900">Your Inventory is Currently Clean & Empty</h3>
             <p className="text-xs text-slate-500 max-w-lg mx-auto mt-1">
-              Start adding your actual products. You can enter items one by one, upload your existing Excel/CSV spreadsheet, or preload a standard 15-item building materials catalog template to get started immediately.
+              Start adding your actual products. You can enter items one by one or upload your existing Excel/CSV spreadsheet to get started immediately.
             </p>
           </div>
 
@@ -319,20 +317,6 @@ export default function InventoryManager({
               <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
               <span>Upload CSV Spreadsheet</span>
             </button>
-
-            {onLoadStarter && (
-              <button
-                onClick={async () => {
-                  if (confirm('Load 15 standard hardware items (cement, rebar, paints, pipes, timber) with 0 initial stock?')) {
-                    await onLoadStarter();
-                  }
-                }}
-                className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-400 font-bold text-xs flex items-center space-x-1.5"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Load Starter Hardware Template (15 Items)</span>
-              </button>
-            )}
           </div>
         </div>
       )}

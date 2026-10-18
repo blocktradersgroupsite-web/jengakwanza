@@ -406,10 +406,6 @@ export const api = {
     }).then(r => r.json());
   },
 
-  loadStarterCatalog: async () => {
-    return fetch(`${API_BASE}/products/load-starter`, { method: 'POST' }).then(r => r.json());
-  },
-
   clearAllProducts: async () => {
     setLocalCache('products', []);
     return fetch(`${API_BASE}/products/clear-all`, { method: 'POST' }).then(r => r.json());
