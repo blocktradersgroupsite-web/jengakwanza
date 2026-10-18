@@ -149,17 +149,17 @@ export default function App() {
         api.getSettings().catch(err => { console.warn('settings error:', err); return null; })
       ]);
 
-      if (Array.isArray(shopsRes) && shopsRes.length) { setShops(shopsRes); setLocalCache('shops', shopsRes); }
-      if (Array.isArray(catsRes) && catsRes.length) { setCategories(catsRes); setLocalCache('categories', catsRes); }
-      if (Array.isArray(prodsRes) && prodsRes.length) { setProducts(prodsRes); setLocalCache('products', prodsRes); }
-      if (Array.isArray(custsRes) && custsRes.length) { setCustomers(custsRes); setLocalCache('customers', custsRes); }
-      if (Array.isArray(supsRes) && supsRes.length) { setSuppliers(supsRes); setLocalCache('suppliers', supsRes); }
-      if (Array.isArray(salesRes) && salesRes.length) { setSales(salesRes); setLocalCache('sales', salesRes); }
-      if (Array.isArray(profRes) && profRes.length) { setProformas(profRes); setLocalCache('proformas', profRes); }
-      if (Array.isArray(delivRes) && delivRes.length) { setDeliveryNotes(delivRes); setLocalCache('deliveryNotes', delivRes); }
-      if (Array.isArray(trfsRes) && trfsRes.length) { setTransfers(trfsRes); setLocalCache('transfers', trfsRes); }
-      if (Array.isArray(posRes) && posRes.length) { setPurchases(posRes); setLocalCache('purchases', posRes); }
-      if (Array.isArray(expsRes) && expsRes.length) { setExpenses(expsRes); setLocalCache('expenses', expsRes); }
+      if (Array.isArray(shopsRes)) { setShops(shopsRes); setLocalCache('shops', shopsRes); }
+      if (Array.isArray(catsRes)) { setCategories(catsRes); setLocalCache('categories', catsRes); }
+      if (Array.isArray(prodsRes)) { setProducts(prodsRes); setLocalCache('products', prodsRes); }
+      if (Array.isArray(custsRes)) { setCustomers(custsRes); setLocalCache('customers', custsRes); }
+      if (Array.isArray(supsRes)) { setSuppliers(supsRes); setLocalCache('suppliers', supsRes); }
+      if (Array.isArray(salesRes)) { setSales(salesRes); setLocalCache('sales', salesRes); }
+      if (Array.isArray(profRes)) { setProformas(profRes); setLocalCache('proformas', profRes); }
+      if (Array.isArray(delivRes)) { setDeliveryNotes(delivRes); setLocalCache('deliveryNotes', delivRes); }
+      if (Array.isArray(trfsRes)) { setTransfers(trfsRes); setLocalCache('transfers', trfsRes); }
+      if (Array.isArray(posRes)) { setPurchases(posRes); setLocalCache('purchases', posRes); }
+      if (Array.isArray(expsRes)) { setExpenses(expsRes); setLocalCache('expenses', expsRes); }
       if (Array.isArray(usersRes) && usersRes.length) {
         setUsers(usersRes);
         setLocalCache('users', usersRes);
@@ -389,9 +389,10 @@ export default function App() {
   };
 
   const handleDeleteProduct = async (id) => {
-    await api.deleteProduct(id);
+    const targetId = String(id);
+    await api.deleteProduct(targetId);
     setProducts(prev => {
-      const filtered = prev.filter(p => p.id !== id);
+      const filtered = prev.filter(p => String(p.id) !== targetId);
       setLocalCache('products', filtered);
       return filtered;
     });

@@ -79,9 +79,9 @@ if (typeof window !== 'undefined') {
 export function getLocalCache(key, fallback = []) {
   try {
     const raw = localStorage.getItem(`${CACHE_PREFIX}${key}`);
-    if (raw) {
+    if (raw !== null && raw !== undefined) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) ? parsed.length > 0 : parsed && typeof parsed === 'object') {
+      if (Array.isArray(parsed) || (parsed && typeof parsed === 'object')) {
         return parsed;
       }
     }
@@ -256,6 +256,13 @@ export async function syncOfflineQueue(apiClient, onProgress = null) {
           case 'PRODUCT_UPDATE': {
             const { id, data } = item.payload;
             await apiClient.updateProduct(id, data);
+            success = true;
+            break;
+          }
+
+          case 'PRODUCT_DELETE': {
+            const { id } = item.payload;
+            await apiClient.deleteProduct(id);
             success = true;
             break;
           }

@@ -123,12 +123,24 @@ export default function LoginPage({ users = [], settings, onLogin }) {
     }
   };
 
+  React.useEffect(() => {
+    document.documentElement.style.backgroundColor = '#020617';
+    document.body.style.backgroundColor = '#020617';
+    return () => {
+      document.documentElement.style.backgroundColor = '';
+      document.body.style.backgroundColor = '';
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative select-none font-sans">
+    <div className="min-h-screen min-h-[100dvh] w-full bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 sm:p-6 py-10 relative select-none font-sans overflow-x-hidden">
       
+      {/* Fixed Fullscreen Background Blanket to Eliminate Any White Gaps When Scrolling */}
+      <div className="fixed inset-0 bg-slate-950 pointer-events-none -z-20"></div>
+
       {/* Background Brand Ambience */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#082825]/60 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="fixed -top-32 -left-32 w-96 h-96 bg-[#082825]/60 rounded-full blur-3xl pointer-events-none -z-10"></div>
+      <div className="fixed -bottom-32 -right-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
       {/* Main Authentication Card */}
       <div className="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden z-10 animate-in fade-in zoom-in-95 duration-200">

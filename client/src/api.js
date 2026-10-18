@@ -309,15 +309,38 @@ export const api = {
   },
 
   deleteProduct: async (id) => {
+    const targetId = String(id);
     const sb = getSupabase();
     if (sb && isSupabaseConfigured()) {
       try {
-        await sb.from('products').delete().eq('id', id);
-      } catch (err) {}
+        const { error } = await sb.from('products').delete().eq('id', id);
+        if (error) console.warn('Supabase delete error:', error);
+      } catch (err) {
+        console.warn('Supabase delete exception:', err);
+      }
     }
-    fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' }).catch(() => {});
+
+    try {
+      const res = await fetch(`${API_BASE}/products/${encodeURIComponent(targetId)}`, { 
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (!res.ok) {
+        console.warn(`Server returned status ${res.status} when deleting product ${targetId}`);
+      }
+    } catch (err) {
+      console.warn('Network error during deleteProduct, queueing offline:', err);
+      addToOfflineQueue({
+        type: 'PRODUCT_DELETE',
+        payload: { id: targetId },
+        description: `Delete product ID ${targetId}`
+      });
+    }
+
+    // Always update local cache immediately so UI and cache stay strictly in sync
     const localProds = getLocalCache('products', []);
-    setLocalCache('products', localProds.filter(p => p.id !== id));
+    const filtered = localProds.filter(p => String(p.id) !== targetId);
+    setLocalCache('products', filtered);
     return { success: true };
   },
 

@@ -552,10 +552,20 @@ app.put('/api/products/:id', (req, res) => {
 });
 
 app.delete('/api/products/:id', (req, res) => {
+  const rawId = req.params.id;
+  const decodedId = decodeURIComponent(rawId);
   let products = db.get('products');
-  products = products.filter(p => p.id !== req.params.id);
+  const initialCount = products.length;
+
+  products = products.filter(p => {
+    const pId = String(p.id);
+    return pId !== rawId && pId !== decodedId;
+  });
+
   db.set('products', products);
-  res.json({ success: true });
+  const deletedCount = initialCount - products.length;
+  console.log(`[DB Engine] Deleted product ${rawId} (removed: ${deletedCount}, remaining: ${products.length})`);
+  res.json({ success: true, count: products.length, deletedCount });
 });
 
 // Stock adjustment
