@@ -10,8 +10,22 @@ import {
   Plus, 
   Store, 
   CheckCircle, 
-  AlertTriangle 
+  AlertTriangle,
+  Printer,
+  FileText,
+  Image as ImageIcon,
+  Cloud,
+  Database,
+  ExternalLink,
+  RefreshCw,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
+import { 
+  getSupabaseConfig, 
+  saveSupabaseConfig, 
+  testSupabaseConnection 
+} from '../supabase';
 
 export default function SettingsManager({
   settings,
@@ -34,6 +48,25 @@ export default function SettingsManager({
   });
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Supabase Configuration State
+  const [sbConfig, setSbConfig] = useState(getSupabaseConfig());
+  const [sbUrl, setSbUrl] = useState(sbConfig.url || '');
+  const [sbKey, setSbKey] = useState(sbConfig.anonKey || '');
+  const [sbTestResult, setSbTestResult] = useState(null);
+  const [sbTesting, setSbTesting] = useState(false);
+
+  const handleSaveSbConfig = async (e) => {
+    e.preventDefault();
+    setSbTesting(true);
+    setSbTestResult(null);
+
+    saveSupabaseConfig(sbUrl.trim(), sbKey.trim());
+    const res = await testSupabaseConnection();
+    setSbTesting(false);
+    setSbTestResult(res);
+    setSbConfig(getSupabaseConfig());
+  };
 
   const handleSubmitSettings = async (e) => {
     e.preventDefault();
@@ -82,14 +115,23 @@ export default function SettingsManager({
       
       {/* Top Banner */}
       <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-        <div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center space-x-2">
-            <Settings className="w-6 h-6 text-amber-500" />
-            <span>Store Configuration, Multi-Shop & Backups</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Configure business identity, branches, thermal receipt formats, taxes, and system backups.
-          </p>
+        <div className="flex items-center space-x-3.5">
+          <div className="h-12 px-2.5 rounded-xl bg-[#082825] border border-slate-700/80 flex items-center justify-center shadow-xs">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="h-8 w-auto max-w-[110px] object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          </div>
+          <div>
+            <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center space-x-2">
+              <span>Store Configuration, Multi-Shop & Backups</span>
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Configure business identity, branches, thermal receipt formats, taxes, and system backups.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -150,25 +192,40 @@ export default function SettingsManager({
 
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                Head Office Phone:
+                Owner & Head Office Phone(s):
               </label>
               <input
                 type="text"
                 value={formData.phone || ''}
+                placeholder="0788989889 / 0713550104"
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:bg-white"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white"
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                Physical Address:
+                Official Business Email:
+              </label>
+              <input
+                type="email"
+                value={formData.email || ''}
+                placeholder="jengakwanzaltd@gmail.com"
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Postal & Physical Address:
               </label>
               <input
                 type="text"
                 value={formData.address || ''}
+                placeholder="P.O.BOX 14991 ARUSHA"
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:bg-white"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold focus:bg-white"
               />
             </div>
           </div>
@@ -248,12 +305,225 @@ export default function SettingsManager({
           </div>
         </div>
 
+        {/* Brand Logo, Copyright Notice & Printer Defaults */}
+        <div className="pt-4 border-t border-slate-200">
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-3 flex items-center space-x-2">
+            <Printer className="w-4 h-4 text-amber-500" />
+            <span>Document Branding, Logo, Copyright & Printer Options</span>
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* Logo Upload & Preview */}
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+              <label className="block text-xs font-bold text-slate-700">
+                Company Logo (Appears on Receipts, Proformas & Delivery Notes):
+              </label>
+              <div className="flex items-center space-x-4">
+                <div className="w-24 h-20 bg-white border border-slate-300 rounded-xl flex items-center justify-center p-2 overflow-hidden shadow-xs">
+                  {formData.logo ? (
+                    <img src={formData.logo} alt="Store Logo Preview" className="max-h-full max-w-full object-contain" />
+                  ) : (
+                    <div className="text-center text-slate-400">
+                      <ImageIcon className="w-6 h-6 mx-auto mb-1 text-slate-300" />
+                      <span className="text-[9px]">No Logo</span>
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-1.5 flex-1">
+                  <label className="cursor-pointer inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+                    <Upload className="w-3.5 h-3.5 mr-1.5 text-amber-400" />
+                    <span>Upload Logo Image</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            setFormData({ ...formData, logo: ev.target?.result });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                  {formData.logo && (
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, logo: '' })}
+                      className="block text-[11px] text-red-600 hover:underline font-semibold"
+                    >
+                      Remove Logo
+                    </button>
+                  )}
+                  <p className="text-[10px] text-slate-500">Supports PNG, JPG, WebP or SVG format.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Default Printer Preference */}
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Default Printer Type for Orders & Quotations:
+              </label>
+              <div className="space-y-2 text-xs">
+                <label className="flex items-center space-x-2.5 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer hover:border-amber-400">
+                  <input
+                    type="radio"
+                    name="defaultPrinterType"
+                    value="a4"
+                    checked={(formData.defaultPrinterType || 'a4') === 'a4'}
+                    onChange={(e) => setFormData({ ...formData, defaultPrinterType: e.target.value })}
+                    className="text-amber-500 focus:ring-amber-400"
+                  />
+                  <div>
+                    <span className="font-bold text-slate-900 block">📄 A4 Full Page Document</span>
+                    <span className="text-[10px] text-slate-500">Standard office laser / inkjet printer for formal invoices & delivery manifests</span>
+                  </div>
+                </label>
+                <label className="flex items-center space-x-2.5 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer hover:border-amber-400">
+                  <input
+                    type="radio"
+                    name="defaultPrinterType"
+                    value="thermal80"
+                    checked={formData.defaultPrinterType === 'thermal80'}
+                    onChange={(e) => setFormData({ ...formData, defaultPrinterType: e.target.value })}
+                    className="text-amber-500 focus:ring-amber-400"
+                  />
+                  <div>
+                    <span className="font-bold text-slate-900 block">🧾 80mm POS Thermal Printer</span>
+                    <span className="text-[10px] text-slate-500">Standard roll receipt printer used at POS counter</span>
+                  </div>
+                </label>
+                <label className="flex items-center space-x-2.5 p-2 rounded-lg bg-white border border-slate-200 cursor-pointer hover:border-amber-400">
+                  <input
+                    type="radio"
+                    name="defaultPrinterType"
+                    value="thermal58"
+                    checked={formData.defaultPrinterType === 'thermal58'}
+                    onChange={(e) => setFormData({ ...formData, defaultPrinterType: e.target.value })}
+                    className="text-amber-500 focus:ring-amber-400"
+                  />
+                  <div>
+                    <span className="font-bold text-slate-900 block">📱 58mm Mobile / Portable Thermal Printer</span>
+                    <span className="text-[10px] text-slate-500">Handheld Bluetooth roll printer for mobile deliveries & yard staff</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Copyright Notice */}
+            <div className="md:col-span-2">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Copyright Notice & Legal Disclaimer (Printed on all documents):
+              </label>
+              <input
+                type="text"
+                value={formData.copyrightNotice || ''}
+                onChange={(e) => setFormData({ ...formData, copyrightNotice: e.target.value })}
+                placeholder="e.g. © 2026 JENGA KWANZA HARDWARE & STORES. Haki Zote Zimehifadhiwa / All Rights Reserved."
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold focus:bg-white"
+              />
+              <p className="text-[10px] text-slate-500 mt-1">This copyright notice is printed at the footer of all receipts, proformas, and delivery notes.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Banking, Lipa Namba & Quotation Terms */}
+        <div className="pt-4 border-t border-slate-200">
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider mb-3 flex items-center space-x-2">
+            <FileText className="w-4 h-4 text-amber-500" />
+            <span>Bank Accounts, Lipa Namba & Quotation Terms (For Proformas & Deliveries)</span>
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Bank Name:
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. CRDB Bank / NMB Bank"
+                value={formData.bankName || ''}
+                onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold focus:bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Bank Account Number:
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. 0150293810293"
+                value={formData.bankAccount || ''}
+                onChange={(e) => setFormData({ ...formData, bankAccount: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono font-bold focus:bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Account Holder Name:
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. JENGA KWANZA HARDWARE & STORES LTD"
+                value={formData.bankAccountName || ''}
+                onChange={(e) => setFormData({ ...formData, bankAccountName: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold focus:bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Lipa Namba (M-Pesa / Tigo / Airtel):
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. 5566778"
+                value={formData.lipaNamba || ''}
+                onChange={(e) => setFormData({ ...formData, lipaNamba: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono font-bold text-amber-700 focus:bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Proforma Invoice Terms & Conditions:
+              </label>
+              <textarea
+                rows={3}
+                value={formData.proformaTerms || ''}
+                onChange={(e) => setFormData({ ...formData, proformaTerms: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:bg-white leading-relaxed"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Delivery Note Sign-off Terms:
+              </label>
+              <textarea
+                rows={3}
+                value={formData.deliveryTerms || ''}
+                onChange={(e) => setFormData({ ...formData, deliveryTerms: e.target.value })}
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs focus:bg-white leading-relaxed"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Save button */}
         <div className="pt-2 flex justify-end">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center space-x-2 shadow-md shadow-amber-500/20 transition"
+            className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs flex items-center space-x-2 shadow-md shadow-amber-500/20 transition cursor-pointer"
           >
             <Save className="w-4 h-4" />
             <span>{isSubmitting ? 'Saving...' : 'Save Configuration'}</span>
@@ -302,6 +572,114 @@ export default function SettingsManager({
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Supabase Cloud Authentication & Database Connection */}
+      <div className="bg-slate-900 text-white p-6 rounded-2xl shadow-md space-y-4 border border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 className="text-sm font-black text-emerald-400 uppercase tracking-wider flex items-center space-x-2">
+              <Cloud className="w-4 h-4 text-emerald-400" />
+              <span>Supabase Cloud Authentication & Database</span>
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Unganisha mfumo wako na Supabase kwa ajili ya usajili na kuingia kwa usalama mtandaoni (Cloud Authentication).
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <span className={`px-3 py-1 rounded-full text-[11px] font-bold inline-flex items-center space-x-1.5 border ${
+              sbConfig.isConfigured
+                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${sbConfig.isConfigured ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}`}></span>
+              <span>{sbConfig.isConfigured ? 'Supabase Connected' : 'Not Connected'}</span>
+            </span>
+          </div>
+        </div>
+
+        {sbTestResult && (
+          <div className={`p-3 rounded-xl border text-xs flex items-center space-x-2 ${
+            sbTestResult.ok
+              ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-200'
+              : 'bg-red-950/60 border-red-500/40 text-red-200'
+          }`}>
+            {sbTestResult.ok ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <span>Muunganisho umethibitishwa kikamilifu na Supabase!</span>
+              </>
+            ) : (
+              <>
+                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+                <span>{sbTestResult.error}</span>
+              </>
+            )}
+          </div>
+        )}
+
+        <form onSubmit={handleSaveSbConfig} className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          <div>
+            <label className="block text-xs font-bold text-slate-300 mb-1">
+              Supabase Project URL
+            </label>
+            <input
+              type="url"
+              required
+              value={sbUrl}
+              onChange={(e) => setSbUrl(e.target.value)}
+              placeholder="https://xyzabcdefghijk.supabase.co"
+              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-300 mb-1">
+              Supabase Anon Public API Key
+            </label>
+            <input
+              type="text"
+              required
+              value={sbKey}
+              onChange={(e) => setSbKey(e.target.value)}
+              placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs font-mono text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
+
+          <div className="md:col-span-2 flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800">
+            <div className="text-[11px] text-slate-400 flex items-center space-x-1">
+              <span>Funguo hizi zinapatikana:</span>
+              <a 
+                href="https://supabase.com/dashboard" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="text-emerald-400 underline inline-flex items-center gap-0.5 font-bold"
+              >
+                Supabase Dashboard &rarr; Settings &rarr; API <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+            </div>
+
+            <button
+              type="submit"
+              disabled={sbTesting}
+              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs flex items-center space-x-2 shadow-lg shadow-emerald-500/20 transition cursor-pointer disabled:opacity-50"
+            >
+              {sbTesting ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Inajaribu Muunganisho...</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  <span>Hifadhi & Jaribu Muunganisho</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* Database Backup & Disaster Recovery */}

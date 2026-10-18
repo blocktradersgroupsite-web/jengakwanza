@@ -1,0 +1,423 @@
+{
+  "shops": [
+    {
+      "id": "shop-main",
+      "name": "Main Hardware Store",
+      "type": "hardware",
+      "location": "P.O.BOX 14991 ARUSHA",
+      "phone": "0788989889 / 0713550104",
+      "email": "jengakwanzaltd@gmail.com",
+      "isMain": true,
+      "active": true,
+      "created_at": "2026-10-14T21:53:37.030Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-cement",
+      "name": "Cement & Aggregates",
+      "icon": "Box"
+    },
+    {
+      "id": "cat-steel",
+      "name": "Steel & Rebar",
+      "icon": "Layers"
+    },
+    {
+      "id": "cat-roofing",
+      "name": "Roofing & Timber",
+      "icon": "Home"
+    },
+    {
+      "id": "cat-paints",
+      "name": "Paints & Finishes",
+      "icon": "Paintbrush"
+    },
+    {
+      "id": "cat-plumbing",
+      "name": "Plumbing & Pipes",
+      "icon": "Droplets"
+    },
+    {
+      "id": "cat-electrical",
+      "name": "Electrical & Lighting",
+      "icon": "Zap"
+    },
+    {
+      "id": "cat-tools",
+      "name": "Tools & Fasteners",
+      "icon": "Wrench"
+    },
+    {
+      "id": "cat-masonry",
+      "name": "Masonry & Tiling",
+      "icon": "Grid"
+    },
+    {
+      "id": "cat-sanitary",
+      "name": "Sanitaryware & Tiles",
+      "icon": "Droplet"
+    },
+    {
+      "id": "cat-general",
+      "name": "General Hardware",
+      "icon": "Folder"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-1792142788910",
+      "sku": "SKU-9016",
+      "barcode": "6001009406",
+      "name": "egbebedb",
+      "category": "Cement & Aggregates",
+      "brand": "dfgbdbdg",
+      "unit": "Bag",
+      "costPrice": 1,
+      "retailPrice": 1,
+      "wholesalePrice": 1000000000000,
+      "minStockAlert": 10,
+      "stock": {
+        "shop-main": 0
+      },
+      "description": "veve",
+      "image": "data:image/jpeg;base64,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"
+    }
+  ],
+  "customers": [
+    {
+      "id": "cust-walkin",
+      "name": "Walk-in Retail Cash Customer",
+      "phone": "",
+      "email": "",
+      "idNumber": "",
+      "type": "retail",
+      "creditLimit": 0,
+      "currentDebt": 0,
+      "notes": "Default walk-in counter customer"
+    }
+  ],
+  "suppliers": [],
+  "sales": [
+    {
+      "id": "INV-2026-823315",
+      "shopId": "shop-main",
+      "shopName": "Main Hardware Store",
+      "cashierId": "usr-admin",
+      "cashierName": "Store Owner / Director",
+      "customerId": null,
+      "customerName": "Walk-in Retail Customer",
+      "customerPhone": "",
+      "items": [
+        {
+          "productId": "prod-1792142788910",
+          "sku": "SKU-9016",
+          "name": "egbebedb",
+          "unit": "Bag",
+          "quantity": 1,
+          "unitPrice": 1,
+          "costPrice": 1,
+          "discount": 0,
+          "priceType": "retail",
+          "total": 1
+        }
+      ],
+      "subtotal": 1,
+      "discountTotal": 0,
+      "taxRate": 0,
+      "taxAmount": 0,
+      "grandTotal": 1,
+      "paymentMethod": "cash",
+      "paymentDetails": {
+        "cashTendered": 1,
+        "change": 0
+      },
+      "status": "completed",
+      "createdAt": "2026-10-16T09:26:52.323Z"
+    },
+    {
+      "id": "INV-2026-431267",
+      "shopId": "shop-main",
+      "shopName": "Main Hardware Store",
+      "cashierId": "usr-admin",
+      "cashierName": "Store Owner / Director",
+      "customerId": null,
+      "customerName": "Walk-in Retail Customer",
+      "customerPhone": "",
+      "items": [
+        {
+          "productId": "prod-1792135845945",
+          "sku": "SKU-1836",
+          "name": "sdsdvs",
+          "unit": "Bag",
+          "quantity": 7,
+          "unitPrice": 2,
+          "costPrice": 2,
+          "discount": 0,
+          "priceType": "retail",
+          "total": 14
+        }
+      ],
+      "subtotal": 14,
+      "discountTotal": 0,
+      "taxRate": 18,
+      "taxAmount": 3,
+      "grandTotal": 17,
+      "paymentMethod": "cash",
+      "paymentDetails": {
+        "cashTendered": 1600,
+        "change": 1583
+      },
+      "status": "completed",
+      "createdAt": "2026-10-16T07:32:02.026Z"
+    }
+  ],
+  "expenses": [],
+  "transfers": [],
+  "purchases": [],
+  "stockAdjustments": [],
+  "proformas": [
+    {
+      "id": "PROF-2026-460877",
+      "proformaNumber": "PROF-2026-460877",
+      "shopId": "shop-main",
+      "shopName": "Main Hardware Store",
+      "creatorId": "usr-cashier",
+      "creatorName": "Cashier 1",
+      "customerId": null,
+      "customerName": "Counter Cash Customer",
+      "customerPhone": "",
+      "customerAddress": "",
+      "customerTin": "",
+      "items": [
+        {
+          "productId": "prod-1792142788910",
+          "sku": "SKU-9016",
+          "name": "egbebedb",
+          "unit": "Bag",
+          "quantity": 1,
+          "unitPrice": 1,
+          "discount": 0,
+          "priceType": "retail",
+          "total": 1
+        }
+      ],
+      "subtotal": 1,
+      "discountTotal": 0,
+      "taxRate": 0,
+      "taxAmount": 0,
+      "grandTotal": 1,
+      "validUntil": "2026-11-01",
+      "notes": "Counter Quotation generated from POS",
+      "status": "issued",
+      "convertedSaleId": null,
+      "createdAt": "2026-10-18T13:28:11.990Z"
+    },
+    {
+      "id": "PROF-2026-356025",
+      "proformaNumber": "PROF-2026-356025",
+      "shopId": "shop-main",
+      "shopName": "Main Hardware Store",
+      "creatorId": "usr-cashier",
+      "creatorName": "Cashier 1",
+      "customerId": null,
+      "customerName": "Counter Cash Customer",
+      "customerPhone": "",
+      "customerAddress": "",
+      "customerTin": "",
+      "items": [
+        {
+          "productId": "prod-1792142788910",
+          "sku": "SKU-9016",
+          "name": "egbebedb",
+          "unit": "Bag",
+          "quantity": 1,
+          "unitPrice": 1,
+          "discount": 0,
+          "priceType": "retail",
+          "total": 1
+        }
+      ],
+      "subtotal": 1,
+      "discountTotal": 0,
+      "taxRate": 0,
+      "taxAmount": 0,
+      "grandTotal": 1,
+      "validUntil": "2026-11-01",
+      "notes": "Counter Quotation generated from POS",
+      "status": "issued",
+      "convertedSaleId": null,
+      "createdAt": "2026-10-18T13:27:35.440Z"
+    },
+    {
+      "id": "PROF-2026-217120",
+      "proformaNumber": "PROF-2026-217120",
+      "shopId": "shop-main",
+      "shopName": "Main Hardware Store",
+      "creatorId": "usr-cashier",
+      "creatorName": "Cashier 1",
+      "customerId": null,
+      "customerName": "Counter Cash Customer",
+      "customerPhone": "",
+      "customerAddress": "",
+      "customerTin": "",
+      "items": [
+        {
+          "productId": "prod-1792142788910",
+          "sku": "SKU-9016",
+          "name": "egbebedb",
+          "unit": "Bag",
+          "quantity": 1,
+          "unitPrice": 1,
+          "discount": 0,
+          "priceType": "retail",
+          "total": 1
+        }
+      ],
+      "subtotal": 1,
+      "discountTotal": 0,
+      "taxRate": 0,
+      "taxAmount": 0,
+      "grandTotal": 1,
+      "validUntil": "2026-11-01",
+      "notes": "Counter Quotation generated from POS",
+      "status": "issued",
+      "convertedSaleId": null,
+      "createdAt": "2026-10-18T09:53:25.456Z"
+    },
+    {
+      "id": "PROF-2026-122447",
+      "proformaNumber": "PROF-2026-122447",
+      "shopId": "shop-main",
+      "shopName": "Main Hardware Store",
+      "creatorId": "usr-cashier",
+      "creatorName": "Cashier 1",
+      "customerId": null,
+      "customerName": "Counter Cash Customer",
+      "customerPhone": "",
+      "customerAddress": "",
+      "customerTin": "",
+      "items": [
+        {
+          "productId": "prod-1792142788910",
+          "sku": "SKU-9016",
+          "name": "egbebedb",
+          "unit": "Bag",
+          "quantity": 1,
+          "unitPrice": 1,
+          "discount": 0,
+          "priceType": "retail",
+          "total": 1
+        }
+      ],
+      "subtotal": 1,
+      "discountTotal": 0,
+      "taxRate": 0,
+      "taxAmount": 0,
+      "grandTotal": 1,
+      "validUntil": "2026-11-01",
+      "notes": "Counter Quotation generated from POS",
+      "status": "issued",
+      "convertedSaleId": null,
+      "createdAt": "2026-10-18T09:53:04.554Z"
+    },
+    {
+      "id": "PROF-2026-788660",
+      "proformaNumber": "PROF-2026-788660",
+      "shopId": "shop-main",
+      "shopName": "Main Hardware Store",
+      "creatorId": "usr-admin",
+      "creatorName": "Store Owner / Director",
+      "customerId": null,
+      "customerName": "Counter Cash Customer",
+      "customerPhone": "",
+      "customerAddress": "",
+      "customerTin": "",
+      "items": [
+        {
+          "productId": "prod-1792142788910",
+          "sku": "SKU-9016",
+          "name": "egbebedb",
+          "unit": "Bag",
+          "quantity": 1,
+          "unitPrice": 1,
+          "discount": 0,
+          "priceType": "retail",
+          "total": 1
+        }
+      ],
+      "subtotal": 1,
+      "discountTotal": 0,
+      "taxRate": 0,
+      "taxAmount": 0,
+      "grandTotal": 1,
+      "validUntil": "2026-11-01",
+      "notes": "Counter Quotation generated from POS",
+      "status": "issued",
+      "convertedSaleId": null,
+      "createdAt": "2026-10-18T08:06:10.128Z"
+    }
+  ],
+  "deliveryNotes": [],
+  "users": [
+    {
+      "id": "usr-admin",
+      "username": "admin",
+      "email": "admin@jengakwanza.co.tz",
+      "password": "RUMULI2026",
+      "name": "Store Owner / Director",
+      "role": "admin",
+      "pin": "1234",
+      "assignedShopId": "all",
+      "phone": "+255 700 000 001",
+      "active": true
+    },
+    {
+      "id": "usr-cashier",
+      "username": "cashier",
+      "email": "cashier@jengakwanza.co.tz",
+      "password": "KAZINI2026",
+      "name": "Cashier 1",
+      "role": "cashier",
+      "pin": "0000",
+      "assignedShopId": "shop-main",
+      "phone": "+255 700 000 002",
+      "active": true
+    },
+    {
+      "id": "usr-manager",
+      "username": "manager",
+      "email": "manager@jengakwanza.co.tz",
+      "password": "KAZINI2026",
+      "name": "Store Manager",
+      "role": "manager",
+      "pin": "5678",
+      "assignedShopId": "shop-main",
+      "phone": "+255 700 000 003",
+      "active": true
+    }
+  ],
+  "settings": {
+    "businessName": "JENGA KWANZA HARDWARE & STORES",
+    "tagline": "OUR DUTY IS TO DELIGHT YOU.",
+    "currency": "TZS",
+    "currencySymbol": "Tsh",
+    "taxEnabled": false,
+    "taxRate": 18,
+    "traTin": "",
+    "phone": "0788989889 / 0713550104",
+    "email": "jengakwanzaltd@gmail.com",
+    "address": "P.O.BOX 14991 ARUSHA",
+    "receiptHeader": "JENGA KWANZA HARDWARE & STORES",
+    "receiptFooter": "Asante kwa kujenga nasi! Bidhaa zilizonunuliwa zinaweza kubadilishwa ndani ya siku 7 zikiwa katika hali nzuri na risiti halisi.",
+    "logo": "/logo.png",
+    "copyrightNotice": "© 2026 JENGA KWANZA HARDWARE & STORES. Haki Zote Zimehifadhiwa / All Rights Reserved.",
+    "defaultPrinterType": "a4",
+    "bankName": "CRDB Bank",
+    "bankAccount": "0150293810293",
+    "bankAccountName": "JENGA KWANZA HARDWARE & STORES",
+    "lipaNamba": "5544332",
+    "proformaTerms": "Makadirio haya ya bei ni halali kwa siku 14 kuanzia tarehe ya kutolewa. Bei zinaweza kubadilika kulingana na soko.",
+    "deliveryTerms": "Mteja athibitishe idadi na ubora wa vifaa kabla ya kusaini hati hii ya makabidhiano."
+  }
+}

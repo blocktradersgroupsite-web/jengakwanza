@@ -30,22 +30,46 @@
   background: #94a3b8;
 }
 
-/* Thermal receipt print styling */
+/* High-Precision Universal Print Styling for A4 Laser/Inkjet & Thermal Roll Printers */
 @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
   body * {
     visibility: hidden;
   }
-  #thermal-receipt-print-area, #thermal-receipt-print-area * {
-    visibility: visible;
+
+  #printable-document-container,
+  #printable-document-container * {
+    visibility: visible !important;
   }
-  #thermal-receipt-print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 80mm;
-    margin: 0;
-    padding: 10px;
-    background: white;
-    color: black;
+
+  #printable-document-container {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    box-sizing: border-box !important;
+  }
+
+  .no-print {
+    display: none !important;
   }
 }
+

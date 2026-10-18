@@ -165,14 +165,24 @@ export default function CheckoutModal({
         
         {/* Modal Header */}
         <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
-          <div>
-            <h3 className="font-extrabold text-base tracking-wide flex items-center space-x-2">
-              <span>Checkout & Payment</span>
-              <span className="text-xs bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded-full">
-                {cart.length} {cart.length === 1 ? 'item' : 'items'}
-              </span>
-            </h3>
-            <p className="text-xs text-slate-400">{currentShop.name}</p>
+          <div className="flex items-center space-x-3">
+            <div className="h-9 px-2 rounded-lg bg-[#082825] border border-slate-700/80 flex items-center justify-center shadow-xs shrink-0">
+              <img 
+                src="/logo.png" 
+                alt="Logo" 
+                className="h-6 w-auto max-w-[85px] object-contain"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-base tracking-wide flex items-center space-x-2">
+                <span>Checkout & Payment</span>
+                <span className="text-xs bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded-full">
+                  {cart.length} {cart.length === 1 ? 'item' : 'items'}
+                </span>
+              </h3>
+              <p className="text-xs text-slate-400">{currentShop.name}</p>
+            </div>
           </div>
           <button 
             onClick={onClose}

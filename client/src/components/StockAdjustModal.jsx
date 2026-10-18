@@ -47,8 +47,15 @@ export default function StockAdjustModal({
         
         {/* Header */}
         <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <RefreshCw className="w-5 h-5 text-amber-400" />
+          <div className="flex items-center space-x-3">
+            <div className="h-8 px-2 rounded-lg bg-[#082825] border border-slate-700/80 flex items-center justify-center shadow-xs shrink-0">
+              <img 
+                src="/logo.png" 
+                alt="Logo" 
+                className="h-5 w-auto max-w-[80px] object-contain"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            </div>
             <h3 className="font-extrabold text-base tracking-wide">Stock Count Adjustment</h3>
           </div>
           <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">

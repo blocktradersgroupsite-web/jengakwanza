@@ -17,7 +17,11 @@ import {
   Clock,
   RotateCcw,
   Package,
-  Image as ImageIcon
+  Image as ImageIcon,
+  FileText,
+  ShoppingCart,
+  ArrowLeft,
+  ArrowRight
 } from 'lucide-react';
 import CheckoutModal from './CheckoutModal';
 
@@ -29,11 +33,13 @@ export default function PosTerminal({
   settings,
   currentUser,
   customers,
-  onCompleteSale
+  onCompleteSale,
+  onSaveCartAsProforma
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [cart, setCart] = useState([]);
+  const [mobileTab, setMobileTab] = useState('catalog'); // 'catalog' | 'cart'
   const [parkedOrders, setParkedOrders] = useState([]);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [taxEnabled, setTaxEnabled] = useState(settings.taxEnabled || false);
@@ -225,10 +231,47 @@ export default function PosTerminal({
   const grandTotal = netSubtotal + taxAmount;
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row h-[calc(100vh-105px)] overflow-hidden bg-slate-100">
+    <div className="flex-1 flex flex-col lg:flex-row h-[calc(100vh-105px)] overflow-hidden bg-slate-100 relative">
       
+      {/* Mobile / Tablet Segment Switcher (Screens < lg) */}
+      <div className="lg:hidden bg-slate-900 px-3 py-2 border-b border-slate-800 flex items-center justify-between gap-2 shadow-xs shrink-0">
+        <div className="flex bg-slate-950 p-1 rounded-xl w-full border border-slate-800">
+          <button
+            type="button"
+            onClick={() => setMobileTab('catalog')}
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer ${
+              mobileTab === 'catalog'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Package className="w-4 h-4" />
+            <span>Product Catalog</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileTab('cart')}
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer relative ${
+              mobileTab === 'cart'
+                ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <ShoppingCart className="w-4 h-4" />
+            <span>Cart ({cart.length})</span>
+            {cart.length > 0 && (
+              <span className="font-mono text-[10px] font-black bg-slate-900/80 px-1.5 py-0.5 rounded text-amber-400 ml-1">
+                {settings.currencySymbol} {grandTotal.toLocaleString()}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
       {/* LEFT COLUMN: Product Catalog & Fast Grid */}
-      <div className="flex-1 flex flex-col overflow-hidden border-r border-slate-200">
+      <div className={`flex-1 flex flex-col overflow-hidden border-r border-slate-200 ${
+        mobileTab === 'catalog' ? 'flex' : 'hidden lg:flex'
+      }`}>
         
         {/* Top Control Bar: Search & Barcode input */}
         <div className="p-3 bg-white border-b border-slate-200 flex items-center gap-3 shadow-xs">
@@ -400,16 +443,36 @@ export default function PosTerminal({
       </div>
 
       {/* RIGHT COLUMN: Active Cart & Quick Checkout Panel */}
-      <div className="w-full lg:w-96 xl:w-[420px] bg-white flex flex-col h-full border-l border-slate-200 shadow-xl z-10">
+      <div className={`w-full lg:w-96 xl:w-[420px] bg-white flex flex-col h-full border-l border-slate-200 shadow-xl z-10 ${
+        mobileTab === 'cart' ? 'flex' : 'hidden lg:flex'
+      }`}>
         
         {/* Cart Header */}
-        <div className="p-3.5 bg-slate-900 text-white flex items-center justify-between">
+        <div className="p-3 bg-slate-900 text-white flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <ShoppingBag className="w-5 h-5 text-amber-400" />
-            <span className="font-bold text-sm tracking-wide">Current Cart</span>
-            <span className="text-xs bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded-full">
-              {cart.length}
-            </span>
+            <button
+              type="button"
+              onClick={() => setMobileTab('catalog')}
+              className="lg:hidden text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 p-1.5 px-2.5 rounded-xl border border-slate-700 flex items-center space-x-1 font-bold cursor-pointer"
+              title="Back to Product Catalog"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Catalog</span>
+            </button>
+            <div className="h-7 px-1.5 rounded-lg bg-[#082825] border border-slate-700/80 flex items-center justify-center">
+              <img 
+                src="/logo.png" 
+                alt="Logo" 
+                className="h-5 w-auto max-w-[80px] object-contain"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            </div>
+            <div className="flex items-center space-x-1.5">
+              <span className="font-bold text-sm tracking-wide">Current Cart</span>
+              <span className="text-xs bg-amber-500 text-slate-950 font-black px-2 py-0.5 rounded-full">
+                {cart.length}
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -582,18 +645,55 @@ export default function PosTerminal({
             </div>
           </div>
 
-          {/* Action Button: Checkout */}
-          <button
-            onClick={() => setIsCheckoutOpen(true)}
-            disabled={cart.length === 0}
-            className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/25 transition disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.99]"
-          >
-            <CreditCard className="w-4 h-4" />
-            <span>Pay & Print Invoice ({settings.currencySymbol} {grandTotal.toLocaleString()})</span>
-          </button>
+          {/* Action Buttons: Proforma & Checkout */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => onSaveCartAsProforma && onSaveCartAsProforma({ cart, subtotal, discountTotal, taxRate, taxAmount, grandTotal })}
+              disabled={cart.length === 0}
+              className="py-3 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs flex items-center justify-center space-x-1.5 transition disabled:opacity-40 disabled:cursor-not-allowed border border-slate-700 shadow-sm"
+              title="Generate a Proforma Invoice / Quotation from these items"
+            >
+              <FileText className="w-4 h-4" />
+              <span>Proforma</span>
+            </button>
+            <button
+              onClick={() => setIsCheckoutOpen(true)}
+              disabled={cart.length === 0}
+              className="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm flex items-center justify-center space-x-2 shadow-lg shadow-amber-500/25 transition disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.99]"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Pay & Print ({settings.currencySymbol} {grandTotal.toLocaleString()})</span>
+            </button>
+          </div>
         </div>
 
       </div>
+
+      {/* Floating Bottom Quick Bar for Mobile / Tablets */}
+      {mobileTab === 'catalog' && cart.length > 0 && (
+        <div className="lg:hidden fixed bottom-4 left-3 right-3 z-30 animate-in fade-in slide-in-from-bottom-3 duration-150">
+          <div className="bg-slate-950/95 backdrop-blur-md text-white p-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center justify-between gap-3">
+            <div className="flex items-center space-x-2.5">
+              <div className="w-9 h-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
+                {cart.length}
+              </div>
+              <div>
+                <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Cart Total</div>
+                <div className="text-sm font-black text-amber-400 font-mono">
+                  {settings.currencySymbol} {grandTotal.toLocaleString()}
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setMobileTab('cart')}
+              className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl flex items-center space-x-1.5 shadow-lg shadow-amber-500/25 transition cursor-pointer active:scale-95"
+            >
+              <span>View Cart & Pay</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Checkout Modal */}
       <CheckoutModal
@@ -612,6 +712,7 @@ export default function PosTerminal({
         onCompleteSale={async (salePayload) => {
           const saleResult = await onCompleteSale(salePayload);
           setCart([]); // Clear cart upon successful checkout
+          setMobileTab('catalog');
           return saleResult;
         }}
       />

@@ -9,8 +9,36 @@ export default function ReceiptModal({ sale, settings, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto print:p-0 print:bg-white print:static print:overflow-visible">
+      
+      <style>{`
+        @media print {
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          body * {
+            visibility: hidden;
+          }
+          #thermal-receipt-print-area,
+          #thermal-receipt-print-area * {
+            visibility: visible !important;
+          }
+          #thermal-receipt-print-area {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            max-width: 80mm !important;
+            margin: 0 auto !important;
+            padding: 2mm !important;
+            border: 1px solid #000 !important;
+          }
+        }
+      `}</style>
+
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150 print:max-w-none print:shadow-none print:border-none print:rounded-none">
         
         {/* Header Bar */}
         <div className="bg-slate-900 px-5 py-3.5 text-white flex items-center justify-between">
@@ -34,11 +62,22 @@ export default function ReceiptModal({ sale, settings, onClose }) {
           >
             {/* Store Header */}
             <div className="text-center pb-3 border-b border-dashed border-slate-300">
-              <h2 className="font-black text-sm text-slate-950 uppercase tracking-wider">{settings.receiptHeader || settings.businessName}</h2>
-              <p className="text-[11px] text-slate-600">{sale.shopName}</p>
-              {settings.address && <p className="text-[10px] text-slate-500">{settings.address}</p>}
-              {settings.phone && <p className="text-[10px] text-slate-500">Tel: {settings.phone}</p>}
-              {(settings.traTin || settings.kraPin) && <p className="text-[10px] text-slate-600 font-semibold">TIN: {settings.traTin || settings.kraPin}</p>}
+              <div className="mb-2 flex justify-center">
+                <div className="inline-block bg-[#082825] p-1.5 rounded-xl border border-slate-700/80">
+                  <img 
+                    src={settings?.logo || '/logo.png'} 
+                    alt={settings?.businessName || 'Logo'} 
+                    className="max-h-10 max-w-[120px] object-contain"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                </div>
+              </div>
+              <h2 className="font-black text-sm text-slate-950 uppercase tracking-wider">{settings?.receiptHeader || settings?.businessName || 'JENGA KWANZA HARDWARE & STORES'}</h2>
+              <p className="text-[11px] text-slate-600 font-bold">{sale.shopName || settings?.businessName}</p>
+              <p className="text-[10px] text-slate-700 font-semibold">{settings?.address || 'P.O.BOX 14991 ARUSHA'}</p>
+              <p className="text-[10px] text-slate-700 font-bold">Tel: {settings?.phone || '0788989889 / 0713550104'}</p>
+              <p className="text-[10px] text-slate-600">Email: {settings?.email || 'jengakwanzaltd@gmail.com'}</p>
+              {(settings?.traTin || settings?.kraPin) && <p className="text-[10px] text-slate-600 font-semibold">TIN: {settings.traTin || settings.kraPin}</p>}
             </div>
 
             {/* Invoice Meta */}
@@ -175,7 +214,8 @@ export default function ReceiptModal({ sale, settings, onClose }) {
 
             {/* Footer Message */}
             <div className="text-center pt-3 text-[10px] text-slate-500 space-y-1">
-              <p className="font-medium text-slate-700">{settings.receiptFooter}</p>
+              <p className="font-medium text-slate-700">{settings?.receiptFooter || 'Asante kwa kujenga nasi!'}</p>
+              <p className="text-[9px] text-slate-600 font-semibold">📍 {settings?.address || 'P.O.BOX 14991 ARUSHA'} | 📞 {settings?.phone || '0788989889 / 0713550104'}</p>
               <p className="text-[9px] text-slate-400">Powered by Jenga Kwanza Business Management</p>
             </div>
           </div>

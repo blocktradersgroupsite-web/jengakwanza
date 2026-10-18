@@ -230,14 +230,24 @@ export default function InventoryManager({
       
       {/* Top Banner / Actions */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-        <div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center space-x-2">
-            <Package className="w-6 h-6 text-amber-500" />
-            <span>Inventory & Stock Management</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Real-time stock catalog, reorder thresholds, multi-branch tracking, and bulk CSV spreadsheet import.
-          </p>
+        <div className="flex items-center space-x-3.5">
+          <div className="h-11 px-2.5 rounded-xl bg-[#082825] border border-slate-700/80 flex items-center justify-center shadow-xs shrink-0">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="h-7 w-auto max-w-[100px] object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          </div>
+          <div>
+            <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center space-x-2">
+              <Package className="w-5 h-5 text-amber-500" />
+              <span>Inventory & Stock Management</span>
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Real-time stock catalog, reorder thresholds, multi-branch tracking, and bulk CSV spreadsheet import.
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -456,7 +466,11 @@ export default function InventoryManager({
 
                       {/* Cost */}
                       <td className="py-3 px-3 font-semibold text-slate-600">
-                        {settings.currencySymbol} {Number(product.costPrice).toLocaleString()}
+                        {currentUser?.role === 'admin' ? (
+                          `${settings.currencySymbol} ${Number(product.costPrice).toLocaleString()}`
+                        ) : (
+                          <span className="text-slate-400 font-mono text-[11px] italic" title="Cost price is confidential and restricted to Owner">🔒 Confidential</span>
+                        )}
                       </td>
 
                       {/* Retail */}
@@ -517,13 +531,15 @@ export default function InventoryManager({
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => handleDelete(product.id, product.name)}
-                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-slate-100 rounded-lg transition"
-                            title="Delete Product"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {currentUser?.role === 'admin' && (
+                            <button
+                              onClick={() => handleDelete(product.id, product.name)}
+                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-slate-100 rounded-lg transition"
+                              title="Delete Product (Owner Only)"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

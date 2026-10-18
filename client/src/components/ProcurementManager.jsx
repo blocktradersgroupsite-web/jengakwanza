@@ -134,14 +134,24 @@ export default function ProcurementManager({
       
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-        <div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center space-x-2">
-            <Truck className="w-6 h-6 text-amber-500" />
-            <span>Procurement & Supplier Orders (Goods Received)</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Manage cement mills, steel distributors, paint manufacturers, purchase orders, and stock receiving.
-          </p>
+        <div className="flex items-center space-x-3.5">
+          <div className="h-11 px-2.5 rounded-xl bg-[#082825] border border-slate-700/80 flex items-center justify-center shadow-xs shrink-0">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="h-7 w-auto max-w-[100px] object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          </div>
+          <div>
+            <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center space-x-2">
+              <Truck className="w-5 h-5 text-amber-500" />
+              <span>Procurement & Supplier Orders (Goods Received)</span>
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Manage cement mills, steel distributors, paint manufacturers, purchase orders, and stock receiving.
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center space-x-2.5">

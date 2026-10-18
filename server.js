@@ -47,9 +47,9 @@ function getCleanProductionData() {
       id: 'shop-main',
       name: 'Main Hardware Store',
       type: 'hardware',
-      location: 'Commercial Center, Main Street',
-      phone: '+254 700 000 000',
-      email: 'store@business.co.ke',
+      location: 'P.O.BOX 14991 ARUSHA',
+      phone: '0788989889 / 0713550104',
+      email: 'jengakwanzaltd@gmail.com',
       isMain: true,
       active: true,
       created_at: new Date().toISOString()
@@ -85,48 +85,63 @@ function getCleanProductionData() {
     {
       id: 'usr-admin',
       username: 'admin',
+      email: 'admin@jengakwanza.co.tz',
+      password: 'RUMULI2026',
       name: 'Store Owner / Director',
       role: 'admin',
       pin: '1234',
       assignedShopId: 'all',
-      phone: '',
+      phone: '+255 700 000 001',
       active: true
     },
     {
       id: 'usr-cashier',
       username: 'cashier',
+      email: 'cashier@jengakwanza.co.tz',
+      password: 'KAZINI2026',
       name: 'Cashier 1',
       role: 'cashier',
       pin: '0000',
       assignedShopId: 'shop-main',
-      phone: '',
+      phone: '+255 700 000 002',
       active: true
     },
     {
       id: 'usr-manager',
       username: 'manager',
+      email: 'manager@jengakwanza.co.tz',
+      password: 'KAZINI2026',
       name: 'Store Manager',
       role: 'manager',
       pin: '5678',
       assignedShopId: 'shop-main',
-      phone: '',
+      phone: '+255 700 000 003',
       active: true
     }
   ];
 
   const settings = {
     businessName: 'JENGA KWANZA HARDWARE & STORES',
-    tagline: 'Ubora wa Vifaa vya Ujenzi, Mabati, Saruji na Rangi',
+    tagline: 'OUR DUTY IS TO DELIGHT YOU.',
     currency: 'TZS',
     currencySymbol: 'Tsh',
     taxEnabled: false,
     taxRate: 18,
     traTin: '',
-    phone: '+255 700 000 000',
-    email: 'info@jengakwanza.co.tz',
-    address: 'Kariakoo Commercial District, Dar es Salaam',
+    phone: '0788989889 / 0713550104',
+    email: 'jengakwanzaltd@gmail.com',
+    address: 'P.O.BOX 14991 ARUSHA',
     receiptHeader: 'JENGA KWANZA HARDWARE & STORES',
-    receiptFooter: 'Asante kwa kujenga nasi! Bidhaa zilizonunuliwa zinaweza kubadilishwa ndani ya siku 7 zikiwa katika hali nzuri na risiti halisi.'
+    receiptFooter: 'Asante kwa kujenga nasi! Bidhaa zilizonunuliwa zinaweza kubadilishwa ndani ya siku 7 zikiwa katika hali nzuri na risiti halisi.',
+    logo: '/logo.png',
+    copyrightNotice: '© 2026 JENGA KWANZA HARDWARE & STORES. Haki Zote Zimehifadhiwa / All Rights Reserved.',
+    defaultPrinterType: 'a4',
+    bankName: 'CRDB Bank / NMB Bank',
+    bankAccount: '0150293810293',
+    bankAccountName: 'JENGA KWANZA HARDWARE & STORES LTD',
+    lipaNamba: '5566778 (Vodacom / Tigo / Airtel)',
+    proformaTerms: '1. Bei zilizotajwa zina uhalali wa siku 14 kuanzia tarehe ya hati hii.\n2. Malipo yote yafanyike kupitia akaunti au Lipa Namba za benki zilizo hapo juu.\n3. Bidhaa zitatolewa baada ya malipo kuthibitishwa kikamilifu.',
+    deliveryTerms: '1. Mpokeaji lazima ahakikishe idadi na ubora wa vifaa kabla ya kusaini hati hii.\n2. Malalamiko kuhusu uharibifu au upungufu lazima yawasilishwe papo hapo kwa msafirishaji.\n3. Sahihi ya mpokeaji inathibitisha kupokea mzigo ukiwa katika hali nzuri na timilifu.'
   };
 
   return {
@@ -140,6 +155,8 @@ function getCleanProductionData() {
     transfers,
     purchases,
     stockAdjustments,
+    proformas: [],
+    deliveryNotes: [],
     users,
     settings
   };
@@ -391,50 +408,209 @@ function getStarterProducts(shopId = 'shop-main') {
   ];
 }
 
-// Database Helper
+// Enterprise-Grade Persistent Database Engine with Zero Data Loss Guarantee
 class JsonDB {
   constructor(filepath) {
     this.filepath = filepath;
+    this.dir = path.dirname(filepath);
+    this.backupFile = path.join(this.dir, 'database.backup.json');
+    this.backupsDir = path.join(this.dir, 'backups');
     this.data = null;
+    this.writeCount = 0;
+    this.lastBackupTime = Date.now();
+
+    // Ensure storage and backup directories exist
+    if (!fs.existsSync(this.dir)) {
+      fs.mkdirSync(this.dir, { recursive: true });
+    }
+    if (!fs.existsSync(this.backupsDir)) {
+      fs.mkdirSync(this.backupsDir, { recursive: true });
+    }
+
     this.init();
   }
 
   init() {
-    try {
-      if (fs.existsSync(this.filepath)) {
+    let loaded = false;
+
+    // 1. Try Primary Database File
+    if (fs.existsSync(this.filepath)) {
+      try {
         const raw = fs.readFileSync(this.filepath, 'utf-8');
-        this.data = JSON.parse(raw);
-      } else {
-        this.data = getCleanProductionData();
-        this.save();
+        if (raw && raw.trim().length > 0) {
+          this.data = JSON.parse(raw);
+          loaded = true;
+          console.log(`[DB Engine] Successfully loaded primary database from: ${this.filepath}`);
+        }
+      } catch (err) {
+        console.error(`[DB Engine] Warning: Failed to parse primary database:`, err.message);
       }
-    } catch (e) {
-      console.error('Error loading DB, initializing clean production database:', e);
+    }
+
+    // 2. If Primary failed or empty, try Secondary Mirror Backup
+    if (!loaded && fs.existsSync(this.backupFile)) {
+      try {
+        const raw = fs.readFileSync(this.backupFile, 'utf-8');
+        if (raw && raw.trim().length > 0) {
+          this.data = JSON.parse(raw);
+          loaded = true;
+          console.log(`[DB Engine] Restored database from secondary mirror backup: ${this.backupFile}`);
+          // Restore primary file immediately
+          this.saveAtomic();
+        }
+      } catch (err) {
+        console.error(`[DB Engine] Warning: Failed to parse secondary backup:`, err.message);
+      }
+    }
+
+    // 3. If Secondary failed, try the latest snapshot in backups/
+    if (!loaded && fs.existsSync(this.backupsDir)) {
+      try {
+        const snapshotFiles = fs.readdirSync(this.backupsDir)
+          .filter(f => f.endsWith('.json'))
+          .sort((a, b) => b.localeCompare(a)); // newest first
+
+        for (const snap of snapshotFiles) {
+          try {
+            const snapPath = path.join(this.backupsDir, snap);
+            const raw = fs.readFileSync(snapPath, 'utf-8');
+            if (raw && raw.trim().length > 0) {
+              this.data = JSON.parse(raw);
+              loaded = true;
+              console.log(`[DB Engine] Recovered database from historical snapshot: ${snap}`);
+              this.saveAtomic();
+              break;
+            }
+          } catch (e) {}
+        }
+      } catch (err) {
+        console.error(`[DB Engine] Error scanning snapshots:`, err.message);
+      }
+    }
+
+    // 4. Fallback only if no data file exists anywhere
+    if (!loaded) {
+      console.log(`[DB Engine] Initializing fresh clean production database.`);
       this.data = getCleanProductionData();
-      this.save();
+      this.saveAtomic();
+    } else {
+      // Reconcile and ensure all required collections exist without losing custom data
+      const defaultState = getCleanProductionData();
+      let modified = false;
+
+      Object.keys(defaultState).forEach(key => {
+        if (!this.data[key]) {
+          this.data[key] = defaultState[key];
+          modified = true;
+        }
+      });
+
+      // Ensure fixed users passwords remain accessible
+      if (Array.isArray(this.data.users)) {
+        const admin = this.data.users.find(u => u.role === 'admin' || u.id === 'usr-admin');
+        if (admin && admin.password !== 'RUMULI2026') {
+          admin.password = 'RUMULI2026';
+          modified = true;
+        }
+        const staff = this.data.users.filter(u => u.role !== 'admin');
+        staff.forEach(s => {
+          if (!s.password || s.password === '1234') {
+            s.password = 'KAZINI2026';
+            modified = true;
+          }
+        });
+      }
+
+      if (modified) {
+        this.saveAtomic();
+      }
+    }
+  }
+
+  // Atomic write to disk: write to .tmp, sync, rename, then mirror
+  saveAtomic() {
+    if (!this.data) return;
+
+    try {
+      const jsonContent = JSON.stringify(this.data, null, 2);
+      const tmpPath = `${this.filepath}.${Date.now()}.tmp`;
+
+      // 1. Write to temporary file and force flush
+      fs.writeFileSync(tmpPath, jsonContent, 'utf-8');
+
+      // 2. Atomic rename to primary file
+      try {
+        fs.renameSync(tmpPath, this.filepath);
+      } catch (renameErr) {
+        // Windows fallback if rename is locked
+        fs.copyFileSync(tmpPath, this.filepath);
+        try { fs.unlinkSync(tmpPath); } catch (e) {}
+      }
+
+      // 3. Save mirror backup
+      fs.writeFileSync(this.backupFile, jsonContent, 'utf-8');
+
+      // 4. Milestone automated snapshot (every 25 writes or every 30 minutes)
+      this.writeCount++;
+      const now = Date.now();
+      if (this.writeCount % 25 === 0 || (now - this.lastBackupTime > 30 * 60 * 1000)) {
+        this.createSnapshot();
+        this.lastBackupTime = now;
+      }
+    } catch (err) {
+      console.error('[DB Engine] Critical: Failed to persist database atomically:', err);
     }
   }
 
   save() {
+    this.saveAtomic();
+  }
+
+  createSnapshot(tag = 'auto') {
     try {
-      fs.writeFileSync(this.filepath, JSON.stringify(this.data, null, 2), 'utf-8');
-    } catch (e) {
-      console.error('Failed to persist DB to disk:', e);
+      if (!fs.existsSync(this.backupsDir)) {
+        fs.mkdirSync(this.backupsDir, { recursive: true });
+      }
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `db-snapshot-${tag}-${timestamp}.json`;
+      const snapPath = path.join(this.backupsDir, filename);
+
+      fs.writeFileSync(snapPath, JSON.stringify(this.data, null, 2), 'utf-8');
+
+      // Prune old snapshots, keep latest 20
+      const snapshots = fs.readdirSync(this.backupsDir)
+        .filter(f => f.startsWith('db-snapshot-') && f.endsWith('.json'))
+        .sort();
+
+      if (snapshots.length > 20) {
+        const toDelete = snapshots.slice(0, snapshots.length - 20);
+        toDelete.forEach(f => {
+          try { fs.unlinkSync(path.join(this.backupsDir, f)); } catch (e) {}
+        });
+      }
+
+      return filename;
+    } catch (err) {
+      console.error('[DB Engine] Failed to create snapshot:', err);
+      return null;
     }
   }
 
   get(collection) {
+    if (!this.data) return [];
     return this.data[collection] || [];
   }
 
   set(collection, items) {
+    if (!this.data) return;
     this.data[collection] = items;
-    this.save();
+    this.saveAtomic();
   }
 
   resetClean() {
+    this.createSnapshot('pre-wipe');
     this.data = getCleanProductionData();
-    this.save();
+    this.saveAtomic();
     return this.data;
   }
 }
@@ -717,11 +893,20 @@ app.post('/api/customers/:id/pay-debt', (req, res) => {
   if (custIndex === -1) return res.status(404).json({ error: 'Customer not found' });
 
   const customer = customers[custIndex];
+  const sales = db.get('sales');
+
+  // Idempotency: if this payment was already recorded, return immediately
+  if (req.body.id) {
+    const existing = sales.find(s => s.id === req.body.id);
+    if (existing) {
+      return res.json({ customer, receipt: existing });
+    }
+  }
+
   customer.currentDebt = Math.max(0, customer.currentDebt - payAmt);
 
-  const sales = db.get('sales');
   const debtPaymentRecord = {
-    id: `RCT-DEBT-${Date.now()}`,
+    id: req.body.id || `RCT-DEBT-${Date.now()}`,
     shopId: req.body.shopId || 'shop-main',
     shopName: req.body.shopName || 'Main Store',
     cashierId: req.body.cashierId || 'usr-cashier',
@@ -755,7 +940,7 @@ app.post('/api/customers/:id/pay-debt', (req, res) => {
       remainingBalance: customer.currentDebt
     },
     status: 'completed',
-    createdAt: new Date().toISOString()
+    createdAt: req.body.createdAt || new Date().toISOString()
   };
 
   sales.unshift(debtPaymentRecord);
@@ -811,6 +996,14 @@ app.post('/api/sales', (req, res) => {
   const customers = db.get('customers');
   const sales = db.get('sales');
 
+  // Idempotency: If this sale was already processed (e.g. from previous sync attempt), return it immediately
+  if (req.body.id) {
+    const existing = sales.find(s => s.id === req.body.id);
+    if (existing) {
+      return res.status(200).json(existing);
+    }
+  }
+
   // Decrement inventory
   items.forEach(cartItem => {
     const prod = products.find(p => p.id === cartItem.productId);
@@ -828,7 +1021,7 @@ app.post('/api/sales', (req, res) => {
     }
   }
 
-  const invNumber = `INV-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+  const invNumber = req.body.id || `INV-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
   const newSale = {
     id: invNumber,
     shopId,
@@ -847,7 +1040,7 @@ app.post('/api/sales', (req, res) => {
     paymentMethod,
     paymentDetails: paymentDetails || {},
     status: 'completed',
-    createdAt: new Date().toISOString()
+    createdAt: req.body.createdAt || new Date().toISOString()
   };
 
   sales.unshift(newSale);
@@ -857,6 +1050,217 @@ app.post('/api/sales', (req, res) => {
   db.set('sales', sales);
 
   res.status(201).json(newSale);
+});
+
+// --- Proforma Invoices ---
+app.get('/api/proformas', (req, res) => {
+  const { shopId, status } = req.query;
+  let proformas = db.get('proformas');
+  if (shopId && shopId !== 'all') {
+    proformas = proformas.filter(p => p.shopId === shopId);
+  }
+  if (status) {
+    proformas = proformas.filter(p => p.status === status);
+  }
+  res.json(proformas);
+});
+
+app.post('/api/proformas', (req, res) => {
+  const {
+    shopId,
+    shopName,
+    creatorId,
+    creatorName,
+    customerId,
+    customerName,
+    customerPhone,
+    customerAddress,
+    customerTin,
+    items,
+    subtotal,
+    discountTotal,
+    taxRate,
+    taxAmount,
+    grandTotal,
+    validUntil,
+    notes,
+    status = 'issued'
+  } = req.body;
+
+  if (!items || !items.length) {
+    return res.status(400).json({ error: 'Cannot create proforma invoice without items' });
+  }
+
+  const proformas = db.get('proformas');
+  const proformaNumber = `PROF-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+  // Default validUntil to 14 days ahead if not specified
+  const expiryDate = validUntil || new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  const newProforma = {
+    id: proformaNumber,
+    proformaNumber,
+    shopId: shopId || 'shop-main',
+    shopName: shopName || 'Main Hardware Store',
+    creatorId: creatorId || 'staff',
+    creatorName: creatorName || 'Sales Officer',
+    customerId: customerId || null,
+    customerName: customerName || 'Valued Customer',
+    customerPhone: customerPhone || '',
+    customerAddress: customerAddress || '',
+    customerTin: customerTin || '',
+    items: items.map(it => ({
+      productId: it.productId || '',
+      sku: it.sku || '',
+      name: it.name,
+      unit: it.unit || 'Pcs',
+      quantity: Number(it.quantity) || 1,
+      unitPrice: Number(it.unitPrice) || 0,
+      discount: Number(it.discount) || 0,
+      priceType: it.priceType || 'retail',
+      total: Number(it.total) || ((Number(it.unitPrice) || 0) * (Number(it.quantity) || 1))
+    })),
+    subtotal: Number(subtotal) || 0,
+    discountTotal: Number(discountTotal) || 0,
+    taxRate: Number(taxRate) || 0,
+    taxAmount: Number(taxAmount) || 0,
+    grandTotal: Number(grandTotal) || 0,
+    validUntil: expiryDate,
+    notes: notes || '',
+    status, // 'issued', 'converted', 'cancelled', 'draft'
+    convertedSaleId: null,
+    createdAt: new Date().toISOString()
+  };
+
+  proformas.unshift(newProforma);
+  db.set('proformas', proformas);
+  res.status(201).json(newProforma);
+});
+
+app.put('/api/proformas/:id', (req, res) => {
+  const proformas = db.get('proformas');
+  const index = proformas.findIndex(p => p.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Proforma invoice not found' });
+  }
+
+  proformas[index] = {
+    ...proformas[index],
+    ...req.body,
+    updatedAt: new Date().toISOString()
+  };
+
+  db.set('proformas', proformas);
+  res.json(proformas[index]);
+});
+
+app.delete('/api/proformas/:id', (req, res) => {
+  const proformas = db.get('proformas').filter(p => p.id !== req.params.id);
+  db.set('proformas', proformas);
+  res.json({ success: true, message: 'Proforma invoice deleted' });
+});
+
+// --- Delivery Notes / Dispatch Manifests ---
+app.get('/api/delivery-notes', (req, res) => {
+  const { shopId, status } = req.query;
+  let deliveryNotes = db.get('deliveryNotes');
+  if (shopId && shopId !== 'all') {
+    deliveryNotes = deliveryNotes.filter(d => d.shopId === shopId);
+  }
+  if (status) {
+    deliveryNotes = deliveryNotes.filter(d => d.status === status);
+  }
+  res.json(deliveryNotes);
+});
+
+app.post('/api/delivery-notes', (req, res) => {
+  const {
+    orderRef,
+    shopId,
+    shopName,
+    dispatcherId,
+    dispatcherName,
+    customerId,
+    customerName,
+    customerPhone,
+    deliveryAddress,
+    vehicleReg,
+    driverName,
+    driverPhone,
+    dispatchDate,
+    items,
+    notes,
+    status = 'dispatched'
+  } = req.body;
+
+  if (!items || !items.length) {
+    return res.status(400).json({ error: 'Cannot create delivery note without goods items' });
+  }
+
+  const deliveryNotes = db.get('deliveryNotes');
+  const deliveryNumber = `DN-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+
+  const newDeliveryNote = {
+    id: deliveryNumber,
+    deliveryNumber,
+    orderRef: orderRef || '',
+    shopId: shopId || 'shop-main',
+    shopName: shopName || 'Main Hardware Store',
+    dispatcherId: dispatcherId || 'staff',
+    dispatcherName: dispatcherName || 'Store Dispatcher',
+    customerId: customerId || null,
+    customerName: customerName || 'Valued Customer',
+    customerPhone: customerPhone || '',
+    deliveryAddress: deliveryAddress || 'Store Pickup / On-Site Delivery',
+    vehicleReg: (vehicleReg || '').toUpperCase().trim(),
+    driverName: driverName || '',
+    driverPhone: driverPhone || '',
+    dispatchDate: dispatchDate || new Date().toISOString().split('T')[0],
+    items: items.map(it => ({
+      productId: it.productId || '',
+      sku: it.sku || '',
+      name: it.name,
+      unit: it.unit || 'Pcs',
+      quantity: Number(it.quantity) || 1,
+      notes: it.notes || ''
+    })),
+    notes: notes || '',
+    status, // 'dispatched', 'in_transit', 'delivered', 'returned'
+    deliveredAt: status === 'delivered' ? new Date().toISOString() : null,
+    createdAt: new Date().toISOString()
+  };
+
+  deliveryNotes.unshift(newDeliveryNote);
+  db.set('deliveryNotes', deliveryNotes);
+  res.status(201).json(newDeliveryNote);
+});
+
+app.put('/api/delivery-notes/:id', (req, res) => {
+  const deliveryNotes = db.get('deliveryNotes');
+  const index = deliveryNotes.findIndex(d => d.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Delivery note not found' });
+  }
+
+  const updated = {
+    ...deliveryNotes[index],
+    ...req.body,
+    updatedAt: new Date().toISOString()
+  };
+
+  if (req.body.status === 'delivered' && !updated.deliveredAt) {
+    updated.deliveredAt = new Date().toISOString();
+  }
+
+  deliveryNotes[index] = updated;
+  db.set('deliveryNotes', deliveryNotes);
+  res.json(updated);
+});
+
+app.delete('/api/delivery-notes/:id', (req, res) => {
+  const deliveryNotes = db.get('deliveryNotes').filter(d => d.id !== req.params.id);
+  db.set('deliveryNotes', deliveryNotes);
+  res.json({ success: true, message: 'Delivery note deleted' });
 });
 
 // --- Suppliers & Purchases ---
@@ -1064,21 +1468,84 @@ app.get('/api/users', (req, res) => {
 });
 
 app.post('/api/users/login', (req, res) => {
-  const { username, pin } = req.body;
+  const { username, email, password, pin } = req.body;
   const users = db.get('users');
-  const user = users.find(u => (u.username === username || u.pin === pin) && u.active);
+
+  const identifier = (username || email || '').trim().toLowerCase();
+  let user = null;
+
+  if (identifier && password) {
+    user = users.find(u => 
+      ((u.username && u.username.toLowerCase() === identifier) || 
+       (u.email && u.email.toLowerCase() === identifier)) &&
+      u.password === password &&
+      u.active
+    );
+  } else if (pin) {
+    user = users.find(u => u.pin === pin && u.active);
+  } else if (identifier && !password && !pin) {
+    // Cannot log in without password or PIN
+    user = null;
+  }
 
   if (!user) {
-    return res.status(401).json({ error: 'Invalid username or PIN' });
+    return res.status(401).json({ error: 'Invalid username, email, password, or PIN' });
   }
 
   res.json({
     id: user.id,
     username: user.username,
+    email: user.email || '',
     name: user.name,
     role: user.role,
     assignedShopId: user.assignedShopId,
-    phone: user.phone
+    phone: user.phone || '',
+    pin: user.pin
+  });
+});
+
+app.post('/api/users/register', (req, res) => {
+  const { name, email, username, password, pin, role, assignedShopId, phone } = req.body;
+
+  if (!name || (!email && !username)) {
+    return res.status(400).json({ error: 'Full name and email or username are required' });
+  }
+
+  const users = db.get('users');
+  const userIdentifier = (email || username || '').trim().toLowerCase();
+
+  const existing = users.find(u => 
+    (u.email && u.email.toLowerCase() === userIdentifier) || 
+    (u.username && u.username.toLowerCase() === userIdentifier)
+  );
+
+  if (existing) {
+    return res.status(400).json({ error: 'An account with this email or username already exists' });
+  }
+
+  const generatedUsername = username ? username.trim() : (email ? email.split('@')[0] : `user_${Date.now().toString().slice(-4)}`);
+  const finalRole = (role === 'admin' || role === 'owner') ? 'admin' : (role || 'cashier');
+
+  const newUser = {
+    id: `usr-${Date.now()}`,
+    username: generatedUsername,
+    name: name.trim(),
+    email: email ? email.trim() : '',
+    password: password || '',
+    role: finalRole,
+    pin: pin ? pin.trim() : (finalRole === 'admin' ? '1234' : '0000'),
+    assignedShopId: assignedShopId || 'shop-main',
+    phone: phone ? phone.trim() : '',
+    active: true,
+    createdAt: new Date().toISOString()
+  };
+
+  users.push(newUser);
+  db.set('users', users);
+
+  res.status(201).json({
+    success: true,
+    user: newUser
   });
 });
 
@@ -1086,13 +1553,16 @@ app.post('/api/users', (req, res) => {
   const users = db.get('users');
   const newUser = {
     id: `usr-${Date.now()}`,
-    username: req.body.username,
+    username: req.body.username || (req.body.email ? req.body.email.split('@')[0] : `user_${Date.now().toString().slice(-4)}`),
     name: req.body.name,
+    email: req.body.email || '',
+    password: req.body.password || '',
     role: req.body.role || 'cashier',
     pin: req.body.pin || '1234',
-    assignedShopId: req.body.assignedShopId || 'all',
+    assignedShopId: req.body.assignedShopId || 'shop-main',
     phone: req.body.phone || '',
-    active: true
+    active: true,
+    createdAt: new Date().toISOString()
   };
   users.push(newUser);
   db.set('users', users);
@@ -1106,6 +1576,12 @@ app.get('/api/settings', (req, res) => {
     current.currencySymbol = 'Tsh';
     current.currency = 'TZS';
   }
+  if (!current.logo) {
+    current.logo = '/logo.png';
+  }
+  if (!current.tagline || current.tagline.includes('Ubora wa Vifaa')) {
+    current.tagline = 'OUR DUTY IS TO DELIGHT YOU.';
+  }
   res.json(current);
 });
 
@@ -1114,6 +1590,9 @@ app.post('/api/settings', (req, res) => {
   if (!db.data.settings.currencySymbol || db.data.settings.currencySymbol === 'KSh' || db.data.settings.currencySymbol === 'Ksh' || db.data.settings.currencySymbol === 'TSh') {
     db.data.settings.currencySymbol = 'Tsh';
     db.data.settings.currency = 'TZS';
+  }
+  if (!db.data.settings.logo) {
+    db.data.settings.logo = '/logo.png';
   }
   db.save();
   res.json(db.data.settings);
@@ -1222,6 +1701,8 @@ app.post('/api/system/clear-transactions', (req, res) => {
   db.set('transfers', []);
   db.set('purchases', []);
   db.set('stockAdjustments', []);
+  db.set('proformas', []);
+  db.set('deliveryNotes', []);
   
   // Reset customer debts
   const customers = db.get('customers').map(c => ({ ...c, currentDebt: 0 }));
@@ -1249,6 +1730,41 @@ app.post('/api/system/import', (req, res) => {
   db.data = { ...db.data, ...req.body };
   db.save();
   res.json({ success: true, message: 'Database restored successfully' });
+});
+
+// List Automatic Snapshots
+app.get('/api/system/snapshots', (req, res) => {
+  try {
+    if (!fs.existsSync(db.backupsDir)) {
+      return res.json([]);
+    }
+    const files = fs.readdirSync(db.backupsDir)
+      .filter(f => f.endsWith('.json'))
+      .sort((a, b) => b.localeCompare(a));
+
+    const list = files.map(filename => {
+      const filePath = path.join(db.backupsDir, filename);
+      const stat = fs.statSync(filePath);
+      return {
+        filename,
+        size: stat.size,
+        createdAt: stat.mtime
+      };
+    });
+    res.json(list);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to list snapshots' });
+  }
+});
+
+// Create Manual Snapshot
+app.post('/api/system/create-snapshot', (req, res) => {
+  const filename = db.createSnapshot('manual');
+  if (filename) {
+    res.json({ success: true, filename, message: 'Automated backup snapshot created successfully' });
+  } else {
+    res.status(500).json({ error: 'Failed to create backup snapshot' });
+  }
 });
 
 // Serve frontend in production

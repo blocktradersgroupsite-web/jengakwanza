@@ -68,14 +68,23 @@ export default function AnalyticsDashboard({
       
       {/* Top Banner */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center space-x-2">
-            <BarChart3 className="w-6 h-6 text-amber-500" />
-            <span>Executive Business Reports & Profit & Loss</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Consolidated financial performance for {currentShopId === 'all' ? 'All Branches' : currentShop.name}.
-          </p>
+        <div className="flex items-center space-x-3.5">
+          <div className="h-12 px-2.5 rounded-xl bg-[#082825] border border-slate-700/80 flex items-center justify-center shadow-xs">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="h-8 w-auto max-w-[110px] object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          </div>
+          <div>
+            <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center space-x-2">
+              <span>Executive Business Reports & Profit & Loss</span>
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Consolidated financial performance for {currentShopId === 'all' ? 'All Branches' : currentShop.name}.
+            </p>
+          </div>
         </div>
 
         <div className="text-xs bg-slate-100 font-bold text-slate-700 px-3 py-1.5 rounded-xl border border-slate-200 flex items-center space-x-1.5">
